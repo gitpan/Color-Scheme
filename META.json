@@ -1,0 +1,44 @@
+{
+   "abstract" : "generate pleasant color schemes",
+   "author" : [
+      "Ian Langworth <ian@cpan.org>"
+   ],
+   "dynamic_config" : 1,
+   "generated_by" : "ExtUtils::MakeMaker version 6.6302, CPAN::Meta::Converter version 2.120921",
+   "license" : [
+      "unknown"
+   ],
+   "meta-spec" : {
+      "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+      "version" : "2"
+   },
+   "name" : "Color-Scheme",
+   "no_index" : {
+      "directory" : [
+         "t",
+         "inc"
+      ]
+   },
+   "prereqs" : {
+      "build" : {
+         "requires" : {
+            "ExtUtils::MakeMaker" : "0"
+         }
+      },
+      "configure" : {
+         "requires" : {
+            "ExtUtils::MakeMaker" : "0"
+         }
+      },
+      "runtime" : {
+         "requires" : {
+            "List::Util" : "1.14",
+            "POSIX" : "1.08",
+            "Test::Differences" : "0.47",
+            "Test::More" : "0.54"
+         }
+      }
+   },
+   "release_status" : "stable",
+   "version" : "1.03"
+}
