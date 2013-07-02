@@ -1,19 +1,14 @@
-package Color::Scheme;
-
-use warnings;
 use strict;
+use warnings;
+package Color::Scheme;
+{
+  $Color::Scheme::VERSION = '1.05';
+}
+# ABSTRACT: generate pleasant color schemes
 
 use Carp;
-use List::Util qw(min max);
-use POSIX qw(floor);
-
-our $VERSION = '1.04';
-
-=head1 NAME
-
-Color::Scheme - generate pleasant color schemes
-
-=cut
+use List::Util 1.14 qw(min max);
+use POSIX 1.08 qw(floor);
 
 my %SCHEMES = ( map { $_, 1 }
         qw( mono monochromatic contrast triade tetrade analogic ) );
@@ -60,60 +55,6 @@ my %COLOR_WHEEL = (
 
 sub _round { floor( 0.5 + shift ) }
 
-=head1 SYNOPSIS
-
-    use Color::Scheme;
-
-    my $scheme = Color::Scheme->new
-        ->from_hex('ff0000') # or ->from_hue(0)
-        ->scheme('analog')
-        ->distance(0.3)
-        ->add_complement(1)
-        ->variation('pastel')
-        ->web_safe(1)
-
-    my @list = $scheme->colors();
-    # @list = ( "999999","666699","ffffff","99cccc",
-    #           "999999","666699","ffffff","9999cc",
-    #           "669999","666699","ffffff","99cccc",
-    #           "cccccc","996666","ffffff","cccc99" )
-
-    my $set = $scheme->colorset();
-    # $set  = [ [ "999999","666699","ffffff","99cccc", ],
-    #           [ "999999","666699","ffffff","9999cc", ],
-    #           [ "669999","666699","ffffff","99cccc", ],
-    #           [ "cccccc","996666","ffffff","cccc99"  ] ]
-
-
-=head1 DESCRIPTION
-
-This module is a Perl implementation of Color Schemes
-2 (L<http://wellstyled.com/tools/colorscheme2/>), a color scheme generator.
-Start by visitng the Color Schemes 2 web site and playing with the colors.
-When you want to generate those schemes on the fly, begin using this modoule.
-The descriptions herein don't make too much sense without actually seeing the
-colorful results.
-
-Henceforth, paragraphs in quotes denote documentation copied from Color Schemes 2.
-
-"Important note: This tool I<doesn't use the standard HSV or HSB model> (the
-same HSV/HSB values ie. in Photoshop describe different colors!). The color
-wheel used here differs from the RGB spectre used on computer screens, it's
-more in accordance with the classical color theory. This is also why some
-colors (especially shades of blue) make less bright shades than the basic
-colors of the RGB-model. In plus, the RGB-model uses red-green-blue as primary
-colors, but the red-yellow-blue combination is used here. This deformation also
-causes incompatibility in color conversions from RGB-values. Therefore, the RGB
-input (eg. the HTML hex values like #F854A9) is not exact, the conversion is
-rough and sometimes may produce slightly different color."
-
-=head1 METHODS
-
-=head2 new()
-
-The C<new> method will return a new C<Color::Scheme> object.
-
-=cut
 
 sub new {
     my ( $class, @args ) = @_;
@@ -131,21 +72,6 @@ sub new {
     }, $class;
 }
 
-=head2 colors()
-
-Returns an array of 4, 8, 12 or 16 colors in C<RRGGBB> hexidecimal notation
-(without a leading "#") depending on the color scheme and addComplement
-parameter. For each set of four, the first is usually the most saturated color,
-the second a darkened version, the third a pale version and fourth
-a less-pale version. 
-
-For example: With a contrast scheme, L<"colors()"> would return eight colors.
-Indexes 1 and 5 could be background colors, 2 and 6 could be foreground colors.
-
-Trust me, it's much better if you check out the Color Scheme web site, whose
-URL is listed in in L<"DESCRIPTION">.
-
-=cut
 
 sub colors {
     my ($self)      = @_;
@@ -207,28 +133,6 @@ sub colors {
     return @output;
 }
 
-=head2 colorset()
-
-Returns a list of lists of the colors in groups of four. This method simply
-allows you to reference a color in the scheme by its group isntead of its
-absolute index in the list of colors.  I am assuming that L<"colorset()">
-will make it easier to use this module with the templating systems that are
-out there.
-
-For example, if you were to follow the synopsis, say you wanted to retrieve
-the two darkest colors from the first two groups of the scheme, which is
-typically the second color in the group. You could retrieve them with
-L<"colors()">:
-
-    my $first_background  = ($scheme->colors)[1];
-    my $second_background = ($scheme->colors)[5];
-
-Or, with this method,
-
-    my $first_background  = $scheme->colorset->[0][1];
-    my $second_background = $scheme->colorset->[1][1];
-
-=cut
 
 sub colorset {
     my ($self) = @_;
@@ -238,14 +142,6 @@ sub colorset {
     return \@grouped_colors;
 }
 
-=head2 from_hue( degrees )
-
-Sets the base color hue, where C<degrees> is an integer. (Values greater than
-359 and less than 0 wrap back around the wheel.)
-
-The default base hue is 0, or bright red.
-
-=cut
 
 sub from_hue {
     my ( $self, $h ) = @_;
@@ -254,14 +150,6 @@ sub from_hue {
     return $self;
 }
 
-=head2 from_hex( color )
-
-Sets the base color to the given color, where C<color> is in the hexidecimal
-form RRGGBB. C<color> should not be preceded with a hash (#).
-
-The default base color is the equivalent of #ff0000, or bright red.
-
-=cut
 
 sub from_hex {
     my ( $self, $hex ) = @_;
@@ -333,14 +221,6 @@ sub from_hex {
     return $self;
 }
 
-=head2 add_complement( BOOLEAN )
-
-If BOOLEAN is true, an extra set of colors will be produced using the
-complement of the selected color. 
-
-This only works with the analogic color scheme. The default is false.
-
-=cut
 
 sub add_complement {
     my ( $self, $b ) = @_;
@@ -349,14 +229,6 @@ sub add_complement {
     return $self;
 }
 
-=head2 web_safe( BOOL )
-
-Sets whether the colors returned by L<"colors()"> or L<"colorset()"> will be
-web-safe. 
-
-The default is false.
-
-=cut
 
 sub web_safe {
     my ( $self, $b ) = @_;
@@ -365,14 +237,6 @@ sub web_safe {
     return $self;
 }
 
-=head2 distance( FLOAT )
-
-C<FLOAT> must be a value from 0 to 1. You might use this with the L<"triade">,
-L<"tetrade"> or L<"analogic"> color schemes.
-
-The default is 0.5.
-
-=cut
 
 sub distance {
     my ( $self, $d ) = @_;
@@ -383,12 +247,6 @@ sub distance {
     return $self;
 }
 
-=head2 scheme( name )
-
-C<name> must be a valid color scheme name. See L<"COLOR SCHEMES">. The default
-is L<"mono">.
-
-=cut
 
 sub scheme {
     my ( $self, $name ) = @_;
@@ -398,11 +256,6 @@ sub scheme {
     return $self;
 }
 
-=head2 variation( name )
-
-C<name> must be a valid color variation name. See L<"COLOR VARIATIONS">. 
-
-=cut
 
 sub variation {
     my ( $self, $v ) = @_;
@@ -534,6 +387,166 @@ sub get_hex {
     return sprintf( '%02x' x @rgb, @rgb );
 }
 
+
+1;
+
+__END__
+
+=pod
+
+=head1 NAME
+
+Color::Scheme - generate pleasant color schemes
+
+=head1 VERSION
+
+version 1.05
+
+=head1 SYNOPSIS
+
+    use Color::Scheme;
+
+    my $scheme = Color::Scheme->new
+        ->from_hex('ff0000') # or ->from_hue(0)
+        ->scheme('analog')
+        ->distance(0.3)
+        ->add_complement(1)
+        ->variation('pastel')
+        ->web_safe(1)
+
+    my @list = $scheme->colors();
+    # @list = ( "999999","666699","ffffff","99cccc",
+    #           "999999","666699","ffffff","9999cc",
+    #           "669999","666699","ffffff","99cccc",
+    #           "cccccc","996666","ffffff","cccc99" )
+
+    my $set = $scheme->colorset();
+    # $set  = [ [ "999999","666699","ffffff","99cccc", ],
+    #           [ "999999","666699","ffffff","9999cc", ],
+    #           [ "669999","666699","ffffff","99cccc", ],
+    #           [ "cccccc","996666","ffffff","cccc99"  ] ]
+
+=head1 DESCRIPTION
+
+This module is a Perl implementation of Color Schemes
+2 (L<http://wellstyled.com/tools/colorscheme2/>), a color scheme generator.
+Start by visitng the Color Schemes 2 web site and playing with the colors.
+When you want to generate those schemes on the fly, begin using this modoule.
+The descriptions herein don't make too much sense without actually seeing the
+colorful results.
+
+Henceforth, paragraphs in quotes denote documentation copied from Color Schemes 2.
+
+"Important note: This tool I<doesn't use the standard HSV or HSB model> (the
+same HSV/HSB values ie. in Photoshop describe different colors!). The color
+wheel used here differs from the RGB spectre used on computer screens, it's
+more in accordance with the classical color theory. This is also why some
+colors (especially shades of blue) make less bright shades than the basic
+colors of the RGB-model. In plus, the RGB-model uses red-green-blue as primary
+colors, but the red-yellow-blue combination is used here. This deformation also
+causes incompatibility in color conversions from RGB-values. Therefore, the RGB
+input (eg. the HTML hex values like #F854A9) is not exact, the conversion is
+rough and sometimes may produce slightly different color."
+
+=head1 METHODS
+
+=head2 new
+
+The C<new> method will return a new C<Color::Scheme> object.
+
+=head2 colors
+
+Returns an array of 4, 8, 12 or 16 colors in C<RRGGBB> hexidecimal notation
+(without a leading "#") depending on the color scheme and addComplement
+parameter. For each set of four, the first is usually the most saturated color,
+the second a darkened version, the third a pale version and fourth
+a less-pale version. 
+
+For example: With a contrast scheme, L<"colors()"> would return eight colors.
+Indexes 1 and 5 could be background colors, 2 and 6 could be foreground colors.
+
+Trust me, it's much better if you check out the Color Scheme web site, whose
+URL is listed in in L<"DESCRIPTION">.
+
+=head2 colorset
+
+Returns a list of lists of the colors in groups of four. This method simply
+allows you to reference a color in the scheme by its group isntead of its
+absolute index in the list of colors.  I am assuming that L<"colorset()">
+will make it easier to use this module with the templating systems that are
+out there.
+
+For example, if you were to follow the synopsis, say you wanted to retrieve
+the two darkest colors from the first two groups of the scheme, which is
+typically the second color in the group. You could retrieve them with
+L<"colors()">:
+
+    my $first_background  = ($scheme->colors)[1];
+    my $second_background = ($scheme->colors)[5];
+
+Or, with this method,
+
+    my $first_background  = $scheme->colorset->[0][1];
+    my $second_background = $scheme->colorset->[1][1];
+
+=head2 from_hue
+
+  $scheme->from_hue( $degrees )
+
+Sets the base color hue, where C<degrees> is an integer. (Values greater than
+359 and less than 0 wrap back around the wheel.)
+
+The default base hue is 0, or bright red.
+
+=head2 from_hex
+
+  $scheme->from_hex( $color )
+
+Sets the base color to the given color, where C<color> is in the hexidecimal
+form RRGGBB. C<color> should not be preceded with a hash (#).
+
+The default base color is the equivalent of #ff0000, or bright red.
+
+=head2 add_complement
+
+  $scheme->add_complement( $bool )
+
+If C<$bool> is true, an extra set of colors will be produced using the
+complement of the selected color.
+
+This only works with the analogic color scheme. The default is false.
+
+=head2 web_safe
+
+  $scheme->web_safe( $bool )
+
+Sets whether the colors returned by L<"colors()"> or L<"colorset()"> will be
+web-safe. 
+
+The default is false.
+
+=head2 distance
+
+  $scheme->distance( $float )
+
+C<$float> must be a value from 0 to 1. You might use this with the L<"triade">,
+L<"tetrade"> or L<"analogic"> color schemes.
+
+The default is 0.5.
+
+=head2 scheme
+
+  $scheme->scheme( $name )
+
+C<$name> must be a valid color scheme name. See L<"COLOR SCHEMES">. The default
+is L<"mono">.
+
+=head2 variation
+
+  $scheme->variation( $name )
+
+C<$name> must be a valid color variation name. See L<"COLOR VARIATIONS">. 
+
 =head1 COLOR SCHEMES
 
 The following documentation is adapated (and mostly copied verbatim) from the
@@ -569,8 +582,8 @@ and cold colors.
 "You can use the L<"distance()"> method to set the distance of these colors
 from the base color complement. The less the value is, the closer the colors
 are to the contrast color, and are more similar. The best value is between 0.25
-and 0.5. Higher values aren't too suitable - except the shift by 60°, which
-makes another color scheme, the triade:
+and 0.5. Higher values aren't too suitable - except the shift by 60E<0x00B0>,
+which makes another color scheme, the triade:
 
 "The triade is made by three colors evenly distributed on the thirds of the
 color wheel (by 120 degrees). The triade-schemes are vibrating, full of energy,
@@ -642,21 +655,23 @@ Deeper, more-saturated colors.
 
 Greyer, less-saturated colors.
 
-=head1 AUTHOR
+=head1 CREDIT
 
 Color Schemes 2, its documentation and original JavaScript code are copyright
 pixy L<http://www.wellstyled.com/>
 
-This Perl module was created by Ian Langworth <ian.langworth@gmail.com>
+The author has explicitly granted license for this distribution of code to be
+redistribute as specified in the L<COPYRIGHT AND LICENSE> section.
 
-=head1 COPYRIGHT & LICENSE
+=head1 AUTHOR
 
-Copyright (C) 2005 Ian Langworth
+Ian Langworth <ian.langworth@gmail.com>
 
-This license has been granted explicitly by the author of Color Schemes 2. This
-program is free software; you can redistribute it and/or modify it under the
-same terms as Perl itself. 
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2005 by Ian Langworth.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
 =cut
-
-1;
